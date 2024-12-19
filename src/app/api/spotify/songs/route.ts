@@ -9,16 +9,6 @@ import Song from "@/lib/models/song";
 
 dotenv.config();
 
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-});
-
-const initializeSpotifyToken = async () => {
-  const data = await spotifyApi.clientCredentialsGrant();
-  spotifyApi.setAccessToken(data.body.access_token);
-};
-
 // const connectToDatabase = async () => {
 //   if (!mongoose.connection.readyState) {
 //     await mongoose.connect(process.env.MONGODB_URI!, {
@@ -36,6 +26,16 @@ export const GET = async (request: Request) => {
     if (!query) {
       return NextResponse.json({ error: "Missing 'query paramenter in request" }, { status: 400 });
     }
+
+    const spotifyApi = new SpotifyWebApi({
+      clientId: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+    });
+
+    const initializeSpotifyToken = async () => {
+      const data = await spotifyApi.clientCredentialsGrant();
+      spotifyApi.setAccessToken(data.body.access_token);
+    };
 
     if (!spotifyApi.getAccessToken()) {
       console.log("Access token missing, initializing...");

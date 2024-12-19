@@ -6,11 +6,6 @@ import SpotifyWebApi from "spotify-web-api-node";
 import Review from "@/lib/models/review";
 import User from "@/lib/models/user";
 
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-});
-
 // const MONGODB_URI = process.env.MONGODB_URI;
 
 // const connectToDatabase = async () => {
@@ -23,11 +18,6 @@ const spotifyApi = new SpotifyWebApi({
 //   }
 // };
 
-const initializeSpotifyToken = async () => {
-  const data = await spotifyApi.clientCredentialsGrant();
-  spotifyApi.setAccessToken(data.body.access_token);
-};
-
 export const GET = async (request: Request, { params }: { params: { id: string } }) => {
   const { id } = params;
 
@@ -36,6 +26,16 @@ export const GET = async (request: Request, { params }: { params: { id: string }
   }
 
   try {
+    const spotifyApi = new SpotifyWebApi({
+      clientId: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+    });
+
+    const initializeSpotifyToken = async () => {
+      const data = await spotifyApi.clientCredentialsGrant();
+      spotifyApi.setAccessToken(data.body.access_token);
+    };
+
     if (!spotifyApi.getAccessToken()) {
       await initializeSpotifyToken();
     }
